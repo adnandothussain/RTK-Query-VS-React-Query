@@ -1,7 +1,7 @@
-import TodoList from "./features/todos/TodoList";
+import Todos from "./features/todos/Todos";
 
 function App() {
-  return <TodoList />;
+  return <Todos />;
 }
 
 export default App;

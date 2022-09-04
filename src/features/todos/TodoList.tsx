@@ -1,67 +1,60 @@
-// add imports
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import { useGetTodosQuery } from "../../services/api/todos.servie";
+import React, { FC, Fragment } from "react";
+import {
+  Todo,
+  useDeleteTodoMutation,
+  useGetTodosQuery,
+  useUpdateTodoMutation,
+} from "../../services/api/todos.service";
 
-const TodoList = () => {
-  const [newTodo, setNewTodo] = useState("");
+export const TodoList: FC = () => {
   const { isLoading, data, isError, error, isSuccess } = useGetTodosQuery();
+  const [updateTodo] = useUpdateTodoMutation();
+  const [deletTodo] = useDeleteTodoMutation();
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    //addTodo
-    setNewTodo("");
+  const onCompleted = (e: any, todo: Todo) => {
+    updateTodo({
+      ...todo,
+      completed: !todo.completed,
+    });
   };
 
-  const newItemSection = (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="new-todo">Enter a new todo item</label>
-      <div className="new-todo">
-        <input
-          type="text"
-          id="new-todo"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Enter new todo"
-        />
-      </div>
-      <button className="submit">
-        <FontAwesomeIcon icon={faUpload} />
-      </button>
-    </form>
-  );
+  const onDelete = (id: number) => {
+    deletTodo(id);
+  };
 
-  let content;
-  // Define conditional content
   if (isLoading) {
-    content = <p>Loading...</p>;
-  } else if (isError) {
-    content = <p>{error as any}</p>;
-  } else if (isSuccess && data) {
-    content = data.map(({ id, title, completed, userId }) => (
-      <article key={id}>
-        <div className="todo">
-          <input
-            type="checkbox"
-            checked={completed}
-            id={id.toString()}
-            onChange={() => {}}
-          />
-          <label htmlFor={id.toString()}>{title}</label>
-        </div>
-        <button className="trash" onClick={() => {}}>
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </article>
-    ));
+    return <p>Loading...</p>;
   }
-  return (
-    <main>
-      <h1>Todo List</h1>
-      {newItemSection}
-      {content}
-    </main>
-  );
+
+  if (isError) {
+    return <p>{error as any}</p>;
+  }
+
+  if (isSuccess && data) {
+    return (
+      <Fragment>
+        {data.map(({ id, title, completed, userId }, index) => (
+          <article key={`todos_${id}_${userId}_${index}`}>
+            <div className="todo">
+              <input
+                type="checkbox"
+                checked={completed}
+                id={id.toString()}
+                onChange={(e) =>
+                  onCompleted(e, { id, title, completed, userId })
+                }
+              />
+              <label htmlFor={id.toString()}>{title}</label>
+            </div>
+            <button className="trash" onClick={() => onDelete(id)}>
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </article>
+        ))}
+      </Fragment>
+    );
+  }
+  return null;
 };
-export default TodoList;
