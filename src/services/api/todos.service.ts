@@ -16,10 +16,7 @@ export const api = createApi({
       query: () => "todos",
       providesTags: (result) =>
         result
-          ? [
-              ...result.map(({ id }) => ({ type: "Todo" as const, id })),
-              { type: "Todo", id: "LIST" },
-            ]
+          ? result.map(({ id }) => ({ type: "Todo", id }))
           : [{ type: "Todo", id: "LIST" }],
     }),
     addTodo: builder.mutation<Todo, TodoInput>({
