@@ -1,28 +1,20 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FC, Fragment } from "react";
-import {
-  Todo,
-  useDeleteTodoMutation,
-  useGetTodosQuery,
-  useUpdateTodoMutation,
-} from "../../services/api/todos.service";
+import { Todo } from "../../services/api/todos.service";
 
 export const TodoList: FC = () => {
-  const { isLoading, data, isError, error, isSuccess } = useGetTodosQuery();
-  const [updateTodo] = useUpdateTodoMutation();
-  const [deletTodo] = useDeleteTodoMutation();
-
-  const onCompleted = (e: any, todo: Todo) => {
-    updateTodo({
-      ...todo,
-      completed: !todo.completed,
-    });
+  const { isLoading, data, isError, error, isSuccess } = {
+    isLoading: false,
+    data: [],
+    isError: false,
+    error: "",
+    isSuccess: false,
   };
 
-  const onDelete = (id: number) => {
-    deletTodo(id);
-  };
+  const onCompleted = (e: any, todo: Todo) => {};
+
+  const onDelete = (id: number) => {};
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -32,7 +24,7 @@ export const TodoList: FC = () => {
     return <p>{error as any}</p>;
   }
 
-  if (isSuccess && data) {
+  if (isSuccess && data.length) {
     return (
       <Fragment>
         {data.map(({ id, title, completed, userId }, index) => (
@@ -41,12 +33,12 @@ export const TodoList: FC = () => {
               <input
                 type="checkbox"
                 checked={completed}
-                id={id.toString()}
+                id={id}
                 onChange={(e) =>
                   onCompleted(e, { id, title, completed, userId })
                 }
               />
-              <label htmlFor={id.toString()}>{title}</label>
+              <label htmlFor={id}>{title}</label>
             </div>
             <button className="trash" onClick={() => onDelete(id)}>
               <FontAwesomeIcon icon={faTrash} />

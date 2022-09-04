@@ -1,22 +1,16 @@
 import { FC, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { useAddTodoMutation } from "../../services/api/todos.service";
 import { useCallback } from "react";
 
 type NewTodoInputProps = {};
 
 export const NewTodoInput: FC<NewTodoInputProps> = () => {
   const [newTodo, setNewTodo] = useState("");
-  const [addTodo] = useAddTodoMutation();
 
   const onSumbit = useCallback(
     (e: any) => {
       e.preventDefault();
-      addTodo({
-        title: newTodo,
-        userId: 1,
-      });
     },
     [newTodo]
   );
